@@ -12,20 +12,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const apollo_server_express_1 = require("apollo-server-express");
+const insert_1 = require("../common/insert");
 const knex_1 = __importDefault(require("../../knex"));
 exports.typeDefs = apollo_server_express_1.gql `
     type Mutation{
-        AddLocation(locationInput:Location):String
+        AddLocation(input:LocationInput):String
+        AddMosque(input:MosqueInput):String
+        AddUser:String
     }
 
     type Query{
         hello:String
     }
 
-    input Location{
-        locationName:String
+    input LocationInput{
+        locationName:String!
     }
 
+    input MosqueInput{
+        mosqueName:String!
+        mosqueDetails:String!
+        searchTag:String!
+        locationName:String!
+    }
 
     type Schema{
         mutation:Mutation
@@ -34,17 +43,23 @@ exports.typeDefs = apollo_server_express_1.gql `
 `;
 exports.resolvers = {
     Mutation: {
-        AddLocation: (obj, { locationInput: { locationName } }, context, info) => __awaiter(this, void 0, void 0, function* () {
-            const isLocationExist = yield context.knex('location').select("locationId").where("locationName", locationName);
-            console.log(isLocationExist);
-            if (isLocationExist.length < 0) {
-                const { rowCount } = yield context.knex('location').insert({ locationName: locationName });
-                if (rowCount > 0)
-                    return "Location has been successfully inserted";
+        AddLocation: (obj, { input }, context, info) => __awaiter(this, void 0, void 0, function* () {
+            const isLocationExist = yield context.knex('location').select("locationId").where("locationName", input.locationName);
+            console.log(isLocationExist.length);
+            if (isLocationExist.length == 0) {
+                return yield insert_1.insert_into_table(context.knex, 'location', input, " Added Succesffly", "Location couldnt be added");
             }
             else {
                 return "Location already exist";
             }
+        }),
+        AddMosque: (obj, { input }, context, info) => __awaiter(this, void 0, void 0, function* () {
+            const id = yield insert_1.insert_into_table_return_id(context.knex, 'mosque', { mosqueName: input.mosqueName, mosqueDetails: input.mosqueDetails });
+            const seeds = input.searchTag.split(',').map((item) => {
+                return { mosqueId: id, locationName: input.locationName, searchTag: item };
+            });
+            console.log(seeds);
+            return yield insert_1.insert_into_table(context.knex, 'search', seeds, "Mosque Added Succesffly", "Mosque couldnt be added");
         })
     },
     Query: {
