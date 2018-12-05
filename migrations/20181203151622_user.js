@@ -6,7 +6,7 @@ exports.up = function(knex, Promise) {
         table.string('userName')
         table.string('userEmail')
         table.string('userPhone')
-        table.string('userPassword')
+        table.string('userPassword',450)
       })
 };
 

@@ -1,4 +1,9 @@
-async function  insert_into_table(dbConnection:any,tableName:string,inputParameter:any,sucessMsg,ErrMsg){
+async function  insert_into_table(
+    dbConnection:any,
+    tableName:string,
+    inputParameter:any,
+    sucessMsg:string,
+    ErrMsg:string){
     const {rowCount} = await dbConnection(tableName).insert(inputParameter);
     if (rowCount>0){
         return sucessMsg;

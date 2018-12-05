@@ -4,7 +4,7 @@ exports.up = function(knex, Promise) {
         table.increments('searchId')
         table.string('searchTag')
         table.integer('mosqueId')
-        table.string('locationName')
+        table.integer('locationId')
       })
 };
 
