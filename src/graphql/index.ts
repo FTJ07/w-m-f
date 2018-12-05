@@ -3,7 +3,7 @@ import {insert_into_table,insert_into_table_return_id} from "../db/insert";
 import knex from '../../knex';
 import {generateSalt,generatePassword} from '../common/utility';
 import {check_duplicate_exist} from '../db/duplicacy';
-import {retireve_mosque_by_search,retireve_password} from '../db/retrieve';
+import {retireve_mosque_by_search_key,retireve_mosque_by_id,retireve_password,get_user_token} from '../db/retrieve';
 
 export const typeDefs=gql
 `
@@ -15,9 +15,10 @@ export const typeDefs=gql
     }
 
     type Query{
-        GetMosques(query:String):String
-        GetMosqueBySearchKeyword(query:String):String
-
+        GetMosque(query:Int):Mosque
+        GetMosqueBySearchKeyword(query:String):[Mosque]
+        GetUserToken(userEmail:String,userPassword:String):String
+        
     }
 
     type Schema{
@@ -25,10 +26,14 @@ export const typeDefs=gql
         query:Query
     }
 
+
+
     type Mosque{
-        mosqueName:String!
-        mosqueDetails:String!
+        mosqueId:Int
+        mosqueName:String
+        mosqueDetails:String
     }
+
 
     input LocationInput{
         locationName:String!
@@ -104,11 +109,15 @@ export const resolvers = {
     Query:{
         GetMosqueBySearchKeyword:(obj,{query},context,info)=>{
            
-           return retireve_mosque_by_search(context.knex,query);
+           return retireve_mosque_by_search_key(context.knex,query);
         },
-        GetMosques:(obj,{input},context,info)=>{
-            return knex.prototype.name;
+        GetMosque:(obj,{query},context,info)=>{
+            return retireve_mosque_by_id(context.knex,query);
+        },
+        GetUserToken:(obj,{userEmail,userPassword},context,info)=>{
+            return get_user_token(context.knex,userEmail,userPassword);
         }
+
 
     }
 }

@@ -7,13 +7,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const apollo_server_express_1 = require("apollo-server-express");
 const insert_1 = require("../db/insert");
-const knex_1 = __importDefault(require("../../knex"));
 const utility_1 = require("../common/utility");
 const duplicacy_1 = require("../db/duplicacy");
 const retrieve_1 = require("../db/retrieve");
@@ -26,9 +22,10 @@ exports.typeDefs = apollo_server_express_1.gql `
     }
 
     type Query{
-        GetMosques(query:String):String
-        GetMosqueBySearchKeyword(query:String):String
-
+        GetMosque(query:Int):Mosque
+        GetMosqueBySearchKeyword(query:String):[Mosque]
+        GetUserToken(userEmail:String,userPassword:String):String
+        
     }
 
     type Schema{
@@ -36,10 +33,14 @@ exports.typeDefs = apollo_server_express_1.gql `
         query:Query
     }
 
+
+
     type Mosque{
-        mosqueName:String!
-        mosqueDetails:String!
+        mosqueId:Int
+        mosqueName:String
+        mosqueDetails:String
     }
+
 
     input LocationInput{
         locationName:String!
@@ -106,10 +107,13 @@ exports.resolvers = {
     },
     Query: {
         GetMosqueBySearchKeyword: (obj, { query }, context, info) => {
-            return retrieve_1.retireve_mosque_by_search(context.knex, query);
+            return retrieve_1.retireve_mosque_by_search_key(context.knex, query);
         },
-        GetMosques: (obj, { input }, context, info) => {
-            return knex_1.default.prototype.name;
+        GetMosque: (obj, { query }, context, info) => {
+            return retrieve_1.retireve_mosque_by_id(context.knex, query);
+        },
+        GetUserToken: (obj, { userEmail, userPassword }, context, info) => {
+            return retrieve_1.get_user_token(context.knex, userEmail, userPassword);
         }
     }
 };
