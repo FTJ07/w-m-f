@@ -7,7 +7,7 @@ import knex from '../knex';
 const app = express();
 
 app.listen(3000,()=>{
-    console.log("app start on 8000");
+    console.log("app start on 3000");
 })
 
 const graphqlServer = new ApolloServer({

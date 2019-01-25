@@ -1,16 +1,13 @@
-const MyTeam = {
-    size:2,
-    Owner:'Fatema',
-    Cowner:'Kazi Lakit'
-}
+function MathCal(x){
+    console.log("From math cal"+x);
+    return function(y){
+        console.log("From math return func"+x);
+        console.log(x+y);
+    }
+    
+};
 
-//console.log(Date.now());
-//console.log(Date.now()+6000);
-console.log(Date.now()/1000)
-
-function* getTeamMember(member){
-    yield member.Owner;
-} 
-
-const getTheMember = getTeamMember(MyTeam);
-console.log(getTheMember.next());
+const funVar = MathCal(5);
+funVar(4);
+funVar(14);
+funVar(43);
